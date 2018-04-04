@@ -63,7 +63,7 @@ $(document).ready(() => {
 
 function pureCloudInitialize() {
 	// Load main components
-	$('head').append(`<link rel="stylesheet" type="text/css" href="${pureCloudCustomChatConfig.scriptHost}/style/widget.css">`);
+	$('head').append(`<link rel="stylesheet" type="text/css" href="${pureCloudCustomChatConfig.scriptHost}style/widget.css">`);
 	$('body').append($('<div id="purecloud-chatwidget"><div id="purecloud-chatwidget-header"></div><div id="purecloud-chatwidget-container"><div id="purecloud-chatwidget-preview-container"></div><div id="purecloud-chatwidget-chat-container"></div><div id="purecloud-chatwidget-callback-container"></div></div></div>'));
 
 	// Add in preview content
@@ -77,14 +77,14 @@ function pureCloudInitialize() {
 	contentRow.append($('<div class="purecloud-chatwidget-column-50">')
 		.append($('<div id="purecloud-chatwidget-dochat" class="purecloud-chatwidget-column-cell">')
 			// .append('<img class="purecloud-chatwidget-centerimage" src="/img/chat.png" />')
-			.append(`<img class="purecloud-chatwidget-centerimage" src="${pureCloudCustomChatConfig.scriptHost}/img/chat.svg" />`)
+			.append(`<img class="purecloud-chatwidget-centerimage" src="${pureCloudCustomChatConfig.scriptHost}img/chat.svg" />`)
 			.append($('<p>').text('Chat with an expert'))
 		)
 	);
 	contentRow.append($('<div class="purecloud-chatwidget-column-50">')
 		.append($('<div id="purecloud-chatwidget-docallback" class="purecloud-chatwidget-column-cell">')
 			// .append('<img class="purecloud-chatwidget-centerimage" src="/img/callback.png" />')
-			.append(`<img class="purecloud-chatwidget-centerimage" src="${pureCloudCustomChatConfig.scriptHost}/img/callback.svg" />`)
+			.append(`<img class="purecloud-chatwidget-centerimage" src="${pureCloudCustomChatConfig.scriptHost}img/callback.svg" />`)
 			.append($('<p>').text('Let us call you back when we\'re available'))
 		)
 	);
