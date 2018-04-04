@@ -1,0 +1,8 @@
+{
+	"ignore": [
+		"local/*",
+		"static/*",
+		"README.md",
+		"LICENSE"
+	]
+}

@@ -1,0 +1,33 @@
+{
+  "name": "public-stats-service",
+  "version": "1.0.0",
+  "description": "A node.js service that encapsulates PureCloud API calls to provide statistics to unauthenticated external applications",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "source local/setEnv.sh && nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MyPureCloud/public-stats-service.git"
+  },
+  "author": "Developer Evangelists <DeveloperEvangelists@genesys.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MyPureCloud/public-stats-service/issues"
+  },
+  "homepage": "https://github.com/MyPureCloud/public-stats-service#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "lodash": "^4.17.5",
+    "lognext": "0.0.4",
+    "purecloud-platform-client-v2": "^22.0.0",
+    "q": "^1.5.1",
+    "request": "^2.85.0",
+    "request-promise": "^4.2.2",
+    "ws": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.2"
+  }
+}

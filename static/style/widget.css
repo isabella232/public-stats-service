@@ -1,0 +1,110 @@
+#purecloud-chatwidget {
+	position: fixed;
+	bottom: 0;
+	right: 30px;
+	width: 200px;
+	/*width: 450px;*/
+	/*height: 500px;*/
+	/*background-color: #ff4f1f;*/
+	display: flex;
+	flex-flow: column;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	z-index: 9999;
+}
+
+#purecloud-chatwidget-header,
+#purecloud-chatwidget-container {
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	color: #000000;
+}
+
+#purecloud-chatwidget-header {
+	padding: 0px 8px 2px 8px;
+	flex: 0 1 auto;
+	cursor: pointer;
+	color: #ffffff;
+	font-size: 14pt;
+}
+
+#purecloud-chatwidget-header img, #purecloud-chatwidget-header span {
+	vertical-align: middle;
+}
+
+#purecloud-chatwidget-container{
+	flex: 1 1 auto;
+	position: relative;
+  border: 1px solid #cccccc;
+  border-top: 0;
+  border-bottom: 0;
+  background: #fff;
+}
+
+#purecloud-chatwidget-chat-container, 
+#purecloud-chatwidget-callback-container, 
+#purecloud-chatwidget-preview-container {
+	display: none;
+}
+
+#purecloud-chatwidget-preview-container {
+	color: #000;
+	text-align: center;
+}
+
+#purecloud-chatwidget-chat-container > iframe {
+	position: absolute;
+	border: 0;
+}
+
+.purecloud-chatwidget-header-image {
+	width: 16px;
+	height: 16px;
+	padding-right: 6px;
+}
+
+
+
+
+#test-div {
+	width: 400px;
+  border: 1px solid #cccccc;
+}
+
+.purecloud-chatwidget-column-100,
+.purecloud-chatwidget-column-50 {
+	margin: 0;
+  padding: 0 10px;
+}
+
+.purecloud-chatwidget-row {
+  display: flex;
+}
+
+.purecloud-chatwidget-row p {
+	width: 100%;
+}
+
+.purecloud-chatwidget-column-100 {
+	display: flex;
+	flex: 100%;
+}
+
+.purecloud-chatwidget-column-50 {
+	display: flex;
+	flex: 50%;
+}
+
+.purecloud-chatwidget-centerimage {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	width: 64px;
+	height: 64px;
+}
+
+.purecloud-chatwidget-column-cell {
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	padding: 8px;
+	cursor: pointer;
+}
