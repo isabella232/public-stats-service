@@ -28,8 +28,10 @@
 	font-size: 18px;
 }
 
-#purecloud-chatwidget-header img, #purecloud-chatwidget-header span {
+#purecloud-chatwidget-header img, 
+#purecloud-chatwidget-header span {
 	vertical-align: middle;
+	box-sizing: content-box;
 }
 
 #purecloud-chatwidget-container{
