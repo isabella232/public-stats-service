@@ -147,7 +147,7 @@ function pureCloudBuildHeader(text) {
 	let headerText = $('<span>');
 	if (pureCloudCustomChatConfig.header.logo)
 		headerText.append($('<img>').attr({ 
-			src: pureCloudCustomChatConfig.header.logo ,
+			src: pureCloudCustomChatConfig.header.logo,
 			class: 'purecloud-chatwidget-header-image'
 		}));
 	headerText.append($('<span>').text(text));
