@@ -142,6 +142,10 @@
 	line-height: 20px;
 }
 
+#purecloud-chatwidget-callback-submit:hover {
+	background: #ddd;
+}
+
 #purecloud-chatwidget-callback-container p {
 	text-align: center;
 }
