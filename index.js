@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const bodyParser = require('body-parser');
 const express = require('express');
 const http = require('http');
 const log = new (require('lognext'))('service');
@@ -18,11 +19,13 @@ const client = platformClient.ApiClient.instance;
 // client.setDebugLog(console.log, 25);
 const routingApi = new platformClient.RoutingApi();
 const analyticsApi = new platformClient.AnalyticsApi();
+const conversationsApi = new platformClient.ConversationsApi();
 const notificationsApi = new platformClient.NotificationsApi();
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'static')));
 app.use(putCache);
+app.use(bodyParser.json());
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
@@ -101,9 +104,75 @@ app.get('/api/stats/:queueId', getCache, (req, res, next) => {
 			});
 	} catch (err) {
 		log.error(err);
+		res.status(500).send(err.message ? err.message : 'Internal Server Error');
 		next();
 	}
 });
+
+app.post('/api/callback', (req, res, next) => {
+	try {
+		let knownProperties = [
+			'scriptId',
+			'queueId',
+			'routingData',
+			'routingData.queueId',
+			'routingData.languageId',
+			'routingData.priority',
+			'routingData.skillIds',
+			'routingData.preferredAgentIds',
+			'callbackUserName',
+			'callbackNumbers',
+			'callbackScheduledTime',
+			'countryCode',
+			'data',
+		];
+
+		let reqBody = makeSafeObject(req.body, knownProperties);
+
+		if (!reqBody.queueId && (!reqBody.routingData || !reqBody.routingData.queueId)) 
+			return res.status(400).send('Missing required property: queueID');
+		if (!reqBody.callbackNumbers) 
+			return res.status(400).send('Missing required property: callbackNumbers');
+
+		conversationsApi.postConversationsCallbacks(reqBody)
+			.then((data) => {
+				log.info('Callback created: ', data);
+				res.sendStatus(204);
+				next();
+			})
+			.catch((err) => {
+				if (err.status === 400 && err.body.message) {
+					res.status(400).send(err.body.message);
+				} else {
+					log.error(err);
+					res.status(500).send(err.message ? err.message : 'Internal Server Error');
+				}
+				next();
+			});
+	} catch (err) {
+		log.error(err);
+		res.status(500).send(err.message ? err.message : 'Internal Server Error');
+		next();
+	}
+});
+
+function makeSafeObject(dirty, properties) {
+	let safe = {};
+	properties.forEach((prop) => {
+		let parts = prop.split('.');
+		let source = dirty;
+		let target = safe;
+		for (let i=0; i < parts.length - 1; i++) {
+			if (!source[parts[i]]) return; // Source doesn't have property
+			if (!target[parts[i]]) target[parts[i]] = {};
+			source = source[parts[i]];
+			target = target[parts[i]];
+		}
+		if (!source[parts[parts.length-1]]) return; // Source doesn't have property
+		target[parts[parts.length-1]] = source[parts[parts.length-1]];
+	});
+	return safe;
+}
 
 client.loginClientCredentialsGrant(PURECLOUD_CLIENT_ID, PURECLOUD_CLIENT_SECRET)
 	.then(() => {
@@ -222,6 +291,9 @@ function getQueueObservationMetric(data, metricName, qualifier, defaultValue) {
 
 function getCache(req, res, next) {
 	try {
+		// Let putCache know it can cache this request
+		req.isCachable = true;
+
 		let now = Date.now();
 		// Load from cache if expiry later than now
 		if (cache[req.url] && cache[req.url].expiryDate > now) {
@@ -244,8 +316,8 @@ function putCache(req, res, next) {
 		// Monkey patch res.send
 		let oldSend = res.send;
 		res.send = function(data) {
-			// Only store if it's a new response
-			if (!res.isCachedResponse) {
+			// Only store if it's a new response and is cachable
+			if (!res.isCachedResponse && req.isCachable) {
 				// Only store if it was a normal successful response
 				if (res.statusCode === 200) {
 					cachelog.debug(`ADD ${req.url}`);

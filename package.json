@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/MyPureCloud/public-stats-service#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "lodash": "^4.17.5",
     "lognext": "0.0.4",

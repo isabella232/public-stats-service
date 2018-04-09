@@ -57,6 +57,8 @@ $(document).ready(() => {
 		'color': pureCloudCustomChatConfig.chatWidget.color
 	});
 	pureCloudBuildHeader(pureCloudCustomChatConfig.header.defaultText);
+
+	pureCloudRenderWidget('callback');
 });
 
 
@@ -76,14 +78,12 @@ function pureCloudInitialize() {
 	let contentRow = $('<div class="purecloud-chatwidget-row">');
 	contentRow.append($('<div class="purecloud-chatwidget-column-50">')
 		.append($('<div id="purecloud-chatwidget-dochat" class="purecloud-chatwidget-column-cell">')
-			// .append('<img class="purecloud-chatwidget-centerimage" src="/img/chat.png" />')
 			.append(`<img class="purecloud-chatwidget-centerimage" src="${pureCloudCustomChatConfig.scriptHost}img/chat.svg" />`)
 			.append($('<p>').text('Chat with an expert'))
 		)
 	);
 	contentRow.append($('<div class="purecloud-chatwidget-column-50">')
 		.append($('<div id="purecloud-chatwidget-docallback" class="purecloud-chatwidget-column-cell">')
-			// .append('<img class="purecloud-chatwidget-centerimage" src="/img/callback.png" />')
 			.append(`<img class="purecloud-chatwidget-centerimage" src="${pureCloudCustomChatConfig.scriptHost}img/callback.svg" />`)
 			.append($('<p>').text('Let us call you back when we\'re available'))
 		)
@@ -96,9 +96,35 @@ function pureCloudInitialize() {
 	});
 
 	$('#purecloud-chatwidget-docallback').click(() => {
+		console.log('render callback');
 		pureCloudRenderWidget('callback');
 	});
 
+	// Callback content
+	$('#purecloud-chatwidget-callback-container').append('<div class="purecloud-chatwidget-row purecloud-chatwidget-margin8"><label for="purecloud-chatwidget-callback-firstname" class="purecloud-chatwidget-label">First name</label><input type="text" id="purecloud-chatwidget-callback-firstname" /></div>');
+	$('#purecloud-chatwidget-callback-container').append('<div class="purecloud-chatwidget-row purecloud-chatwidget-margin8"><label for="purecloud-chatwidget-callback-lastname" class="purecloud-chatwidget-label">Last name</label><input type="text" id="purecloud-chatwidget-callback-lastname" /></div>');
+	$('#purecloud-chatwidget-callback-container').append('<div class="purecloud-chatwidget-row purecloud-chatwidget-margin8"><label for="purecloud-chatwidget-callback-phonenumber" class="purecloud-chatwidget-label">Phone number</label><input type="tel" id="purecloud-chatwidget-callback-phonenumber" /></div>');
+	$('#purecloud-chatwidget-callback-container').append('<div class="purecloud-chatwidget-row purecloud-chatwidget-margin8"><button id="purecloud-chatwidget-callback-submit">Request Callback</button></div>');
+	$('#purecloud-chatwidget-callback-submit').click(() => {
+		let body = {
+			queueId: pureCloudCustomChatConfig.queueId,
+			callbackNumbers: [ $('#purecloud-chatwidget-callback-phonenumber').val() ],
+			callbackUserName: `${$('#purecloud-chatwidget-callback-firstname').val()} ${$('#purecloud-chatwidget-callback-lastname').val()}`
+		};
+		console.log(body);
+		$.post({
+			url: `${pureCloudCustomChatConfig.scriptHost}api/callback`,
+			data: JSON.stringify(body),
+			contentType: 'application/json'
+		})
+			.then((data) => {
+				$('#purecloud-chatwidget-callback-container').html($('<p>').text('Callback requested!'));
+			})
+			.catch((err) => {
+				console.log('err');
+				$('#purecloud-chatwidget-callback-container').html('<p>Failed to schedule callback! Please try again.</p>');
+			});
+	});
 
 	let defaults = {
 		autoConnect: false,
@@ -199,8 +225,8 @@ function pureCloudRenderWidget(mode = 'closed') {
 		}
 		case 'callback': {
 			$('#purecloud-chatwidget').animate({ 
-				height: pureCloudCustomChatConfig.chatWidget.height, 
-				width: pureCloudCustomChatConfig.chatWidget.height 
+				height: 194, 
+				width: 400 
 			}, pureCloudCustomChatConfig.expandAnimationMs);
 			$('#purecloud-chatwidget-preview-container').fadeOut(d2);
 			$('#purecloud-chatwidget-chat-container').fadeOut(d2);

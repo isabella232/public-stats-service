@@ -65,14 +65,6 @@
 	padding-right: 6px;
 }
 
-
-
-
-#test-div {
-	width: 400px;
-  border: 1px solid #cccccc;
-}
-
 .purecloud-chatwidget-column-100,
 .purecloud-chatwidget-column-50 {
 	margin: 0;
@@ -111,4 +103,44 @@
 	border-radius: 3px;
 	padding: 8px;
 	cursor: pointer;
+}
+
+#purecloud-chatwidget-callback-container label {
+	flex: 35%;
+	align-self: flex-start;
+	vertical-align: middle;
+	text-align: right;
+	clear: both;
+	float:left;
+	margin-right:15px;
+	line-height: 32px;
+}
+
+#purecloud-chatwidget-callback-container input {
+	flex: 65%;
+	align-self: flex-start;
+	margin: 3px;
+	font-size: 14px;
+	line-height: 20px;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+	padding: 3px 6px;
+}
+
+.purecloud-chatwidget-margin8 {
+	margin: 8px;
+}
+
+#purecloud-chatwidget-callback-submit {
+	flex: 100%;
+	font-size: 14px;
+	border-radius: 3px;
+	border: 1px solid #ccc;
+	padding: 3px 6px;
+	cursor: pointer;
+	background: #eee;
+}
+
+#purecloud-chatwidget-callback-container p {
+	text-align: center;
 }

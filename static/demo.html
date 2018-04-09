@@ -4,13 +4,22 @@
 	<title>Chat Demo</title>
 		<script type='text/javascript'>
 // Custom properties - not used by OOTB web chat
+// let pureCloudCustomChatConfig = {
+// 	scriptHost: 'https://desolate-lake-62835.herokuapp.com',
+// 	containerEl: 'purecloud-chatwidget-chat-container',
+// 	queueId: 'db79e38d-25e8-40d5-8b17-3155bf5adc24',
+// 	statsWebsocketUri: 'wss://desolate-lake-62835.herokuapp.com',
+// 	header: {
+// 		logo: 'https://desolate-lake-62835.herokuapp.com/img/logo-genesys.svg'
+// 	}
+// };
 let pureCloudCustomChatConfig = {
-	scriptHost: 'https://desolate-lake-62835.herokuapp.com',
+	scriptHost: '/',
 	containerEl: 'purecloud-chatwidget-chat-container',
 	queueId: 'db79e38d-25e8-40d5-8b17-3155bf5adc24',
-	statsWebsocketUri: 'wss://desolate-lake-62835.herokuapp.com',
+	statsWebsocketUri: 'ws://localhost:8080',
 	header: {
-		logo: 'https://desolate-lake-62835.herokuapp.com/img/logo-genesys.svg'
+		logo: '/img/logo-genesys.svg'
 	}
 };
 
