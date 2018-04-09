@@ -57,8 +57,6 @@ $(document).ready(() => {
 		'color': pureCloudCustomChatConfig.chatWidget.color
 	});
 	pureCloudBuildHeader(pureCloudCustomChatConfig.header.defaultText);
-
-	pureCloudRenderWidget('callback');
 });
 
 
