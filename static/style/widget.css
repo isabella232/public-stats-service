@@ -112,7 +112,7 @@
 	text-align: right;
 	clear: both;
 	float:left;
-	margin-right:15px;
+	margin: 0 15px 0 0;
 	line-height: 32px;
 }
 
@@ -139,6 +139,7 @@
 	padding: 3px 6px;
 	cursor: pointer;
 	background: #eee;
+	line-height: 20px;
 }
 
 #purecloud-chatwidget-callback-container p {

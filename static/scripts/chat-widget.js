@@ -225,7 +225,7 @@ function pureCloudRenderWidget(mode = 'closed') {
 		}
 		case 'callback': {
 			$('#purecloud-chatwidget').animate({ 
-				height: 194, 
+				height: 196, 
 				width: 400 
 			}, pureCloudCustomChatConfig.expandAnimationMs);
 			$('#purecloud-chatwidget-preview-container').fadeOut(d2);
