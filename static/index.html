@@ -4,9 +4,8 @@
 	<title>Chat Demo</title>
 		<script type='text/javascript'>
 // Custom properties - not used by OOTB web chat
-let pureCloudCustomChatConfig = {
+const pureCloudCustomChatConfig = {
 	scriptHost: '/',
-	containerEl: 'purecloud-chatwidget-chat-container',
 	queueId: '00000000-0000-0000-0000-000000000000',
 	statsWebsocketUri: 'ws://localhost:8080',
 	header: {
@@ -17,7 +16,7 @@ let pureCloudCustomChatConfig = {
 // Standard chat properties
 // Documentation: https://developer.mypurecloud.com/api/webchat/
 // Demo: https://developer.mypurecloud.com/developer-tools/#/webchat
-let pureCloudChatConfig = {
+const pureCloudChatConfig = {
 	webchatAppUrl: 'https://apps.mypurecloud.com/webchat',
 	webchatServiceUrl: 'https://realtime.mypurecloud.com:443',
 	orgId: '12345',

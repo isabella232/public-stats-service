@@ -55,7 +55,7 @@ $(document).ready(() => {
 function pureCloudInitialize() {
 	// Load main components
 	$('head').append(`<link rel="stylesheet" type="text/css" href="${pureCloudCustomChatConfig.scriptHost}style/widget.css">`);
-	$('body').append($('<div id="purecloud-chatwidget"><div id="purecloud-chatwidget-header"></div><div id="purecloud-chatwidget-container"><div id="purecloud-chatwidget-preview-container"></div><div id="purecloud-chatwidget-chat-container"></div><div id="purecloud-chatwidget-callback-container"></div></div></div>'));
+	$('body').append($(`<div id="purecloud-chatwidget"><div id="purecloud-chatwidget-header"></div><div id="purecloud-chatwidget-container"><div id="purecloud-chatwidget-preview-container"></div><div id="${pureCloudCustomChatConfig.containerEl}"></div><div id="purecloud-chatwidget-callback-container"></div></div></div>`));
 
 	// Add in preview content
 	let preview = $('<div>');
@@ -117,6 +117,7 @@ function pureCloudInitialize() {
 
 	let defaults = {
 		autoConnect: false,
+		containerEl: 'purecloud-chatwidget-chat-container',
 		chatWidget: {
 			width: 450,
 			height: 500,
@@ -178,7 +179,7 @@ function pureCloudRenderWidget(mode = 'closed') {
 	let d3 = d2 + 100; // half speed + delay
 
 	// Stop and clear any pending animations on the elements
-	$('#purecloud-chatwidget-chat-container').stop(true, false);
+	$(`#${pureCloudCustomChatConfig.containerEl}`).stop(true, false);
 	$('#purecloud-chatwidget-callback-container').stop(true, false);
 	$('#purecloud-chatwidget-preview-container').stop(true, false);
 	$('#purecloud-chatwidget').stop(true, false);
@@ -189,7 +190,7 @@ function pureCloudRenderWidget(mode = 'closed') {
 				height: 'auto', 
 				width: 200 
 			}, pureCloudCustomChatConfig.expandAnimationMs);
-			$('#purecloud-chatwidget-chat-container').fadeOut(d2);
+			$(`#${pureCloudCustomChatConfig.containerEl}`).fadeOut(d2);
 			$('#purecloud-chatwidget-callback-container').fadeOut(d2);
 			$('#purecloud-chatwidget-preview-container').fadeOut(d2);
 			break;
@@ -199,7 +200,7 @@ function pureCloudRenderWidget(mode = 'closed') {
 				height: 257, 
 				width: 350 
 			}, pureCloudCustomChatConfig.expandAnimationMs);
-			$('#purecloud-chatwidget-chat-container').fadeOut(d2);
+			$(`#${pureCloudCustomChatConfig.containerEl}`).fadeOut(d2);
 			$('#purecloud-chatwidget-callback-container').fadeOut(d2);
 			setTimeout(() => $('#purecloud-chatwidget-preview-container').fadeIn(d), d3);
 			break;
@@ -212,7 +213,7 @@ function pureCloudRenderWidget(mode = 'closed') {
 			}, pureCloudCustomChatConfig.expandAnimationMs);
 			$('#purecloud-chatwidget-preview-container').fadeOut(d2);
 			$('#purecloud-chatwidget-callback-container').fadeOut(d2);
-			setTimeout(() => $('#purecloud-chatwidget-chat-container').fadeIn(d), d3);
+			setTimeout(() => $(`#${pureCloudCustomChatConfig.containerEl}`).fadeIn(d), d3);
 			break;
 		}
 		case 'callback': {
@@ -221,7 +222,7 @@ function pureCloudRenderWidget(mode = 'closed') {
 				width: 400 
 			}, pureCloudCustomChatConfig.expandAnimationMs);
 			$('#purecloud-chatwidget-preview-container').fadeOut(d2);
-			$('#purecloud-chatwidget-chat-container').fadeOut(d2);
+			$(`#${pureCloudCustomChatConfig.containerEl}`).fadeOut(d2);
 			setTimeout(() => $('#purecloud-chatwidget-callback-container').fadeIn(d), d3);
 			break;
 		}
