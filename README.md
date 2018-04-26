@@ -13,15 +13,19 @@ The injected widget is anchored to the bottom right corner of the page and is co
 ## Screenshots
 
 Widget collapsed
+
 ![widget collapsed](readme-img/widget1.png)
 
 Widget opened
+
 ![widget opened](readme-img/widget2.png)
 
 Active web chat
+
 ![active web chat](readme-img/chat1.png)
 
 Create callback form
+
 ![create callback form](readme-img/callback1.png)
 
 
