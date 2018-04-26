@@ -236,7 +236,7 @@ function getEwt(queueId, mediaType) {
 			.then((data) => {
 				log.debug(data);
 				if (data.results && data.results.length > 0)
-					deferred.resolve(data.results[0].estimatedWaitTimeSeconds);
+					deferred.resolve(data.results[0].estimatedWaitTimeSeconds ? data.results[0].estimatedWaitTimeSeconds : -1);
 				else
 					deferred.resolve(0);
 			})
@@ -248,7 +248,7 @@ function getEwt(queueId, mediaType) {
 			.then((data) => {
 				log.debug(data);
 				if (data.results && data.results.length > 0)
-					deferred.resolve(data.results[0].estimatedWaitTimeSeconds);
+					deferred.resolve(data.results[0].estimatedWaitTimeSeconds ? data.results[0].estimatedWaitTimeSeconds : -1);
 				else
 					deferred.resolve(0);
 			})
