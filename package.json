@@ -22,15 +22,15 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
-    "lodash": "^4.17.5",
+    "lodash": "^4.17.10",
     "lognext": "0.0.4",
     "purecloud-platform-client-v2": "^22.0.0",
     "q": "^1.5.1",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
-    "ws": "^5.1.0"
+    "ws": "^5.1.1"
   },
   "devDependencies": {
-    "nodemon": "^1.17.2"
+    "nodemon": "^1.17.3"
   }
 }
