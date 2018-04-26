@@ -121,7 +121,7 @@ app.get('/api/stats/:queueId', getCache, (req, res, next) => {
 /**
  * Creates a callback
  * 
- * @route {GET} /api/callback
+ * @route {POST} /api/callback
  * @body {json} queueId - Supports the same structure as the body for POST /api/v2/conversations/callbacks
  * @see https://developer.mypurecloud.com/api/rest/v2/conversations/index.html#postConversationsCallbacks
  * @returns {nothing} Returns 204 upon success
