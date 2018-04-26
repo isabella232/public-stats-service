@@ -16,7 +16,6 @@ const PURECLOUD_CLIENT_ID = process.env.PURECLOUD_CLIENT_ID;
 const PURECLOUD_CLIENT_SECRET = process.env.PURECLOUD_CLIENT_SECRET;
 
 const client = platformClient.ApiClient.instance;
-// client.setDebugLog(console.log, 25);
 const routingApi = new platformClient.RoutingApi();
 const analyticsApi = new platformClient.AnalyticsApi();
 const conversationsApi = new platformClient.ConversationsApi();
@@ -30,13 +29,12 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 const cache = {};
-const monitoredQueueIds = [
-	'db79e38d-25e8-40d5-8b17-3155bf5adc24'
-];
+const monitoredQueueIds = process.env.PURECLOUD_MONITORED_QUEUES.split(',');
 let channel, pureCloudWebSocket;
+let stats = {};
 
 
-
+// Send queue stats on new connection
 wss.on('connection', function connection(ws) {
 	wslog.info('Connection opened');
 	ws.send(JSON.stringify({ queueStats: stats }));
@@ -44,6 +42,17 @@ wss.on('connection', function connection(ws) {
 
 
 
+/* API Routes */
+
+/**
+ * Get stats for a given queue ID 
+ * 
+ * @route {GET} /api/stats/:queueId
+ * @pathparam {string} queueId - The ID of the queue for which to retrieve stats
+ * @queryparam {string[]} key - The type of stats to get. Values: ewt, observations
+ * @queryparam {string} mediaType - (optional) When used with key=ewt, returns the EWT for the given media type. If not specififed, EWT is for the entire queue.
+ * @returns {json} JSON object containing requested stats
+ */
 app.get('/api/stats/:queueId', getCache, (req, res, next) => {
 	log.debug(`Getting data for queue ${req.params.queueId}`);
 	try {
@@ -109,6 +118,14 @@ app.get('/api/stats/:queueId', getCache, (req, res, next) => {
 	}
 });
 
+/**
+ * Creates a callback
+ * 
+ * @route {GET} /api/callback
+ * @body {json} queueId - Supports the same structure as the body for POST /api/v2/conversations/callbacks
+ * @see https://developer.mypurecloud.com/api/rest/v2/conversations/index.html#postConversationsCallbacks
+ * @returns {nothing} Returns 204 upon success
+ */
 app.post('/api/callback', (req, res, next) => {
 	try {
 		let knownProperties = [
@@ -156,24 +173,9 @@ app.post('/api/callback', (req, res, next) => {
 	}
 });
 
-function makeSafeObject(dirty, properties) {
-	let safe = {};
-	properties.forEach((prop) => {
-		let parts = prop.split('.');
-		let source = dirty;
-		let target = safe;
-		for (let i=0; i < parts.length - 1; i++) {
-			if (!source[parts[i]]) return; // Source doesn't have property
-			if (!target[parts[i]]) target[parts[i]] = {};
-			source = source[parts[i]];
-			target = target[parts[i]];
-		}
-		if (!source[parts[parts.length-1]]) return; // Source doesn't have property
-		target[parts[parts.length-1]] = source[parts[parts.length-1]];
-	});
-	return safe;
-}
 
+
+// Log in to PureCloud, start express server, start websocket server, connect to PureCloud notifications
 client.loginClientCredentialsGrant(PURECLOUD_CLIENT_ID, PURECLOUD_CLIENT_SECRET)
 	.then(() => {
 		return notificationsApi.postNotificationsChannels();
@@ -204,6 +206,28 @@ client.loginClientCredentialsGrant(PURECLOUD_CLIENT_ID, PURECLOUD_CLIENT_SECRET)
 
 
 
+/* Local Functions */
+
+// Sanatize object from request to prevent unknown properties
+function makeSafeObject(dirty, properties) {
+	let safe = {};
+	properties.forEach((prop) => {
+		let parts = prop.split('.');
+		let source = dirty;
+		let target = safe;
+		for (let i=0; i < parts.length - 1; i++) {
+			if (!source[parts[i]]) return; // Source doesn't have property
+			if (!target[parts[i]]) target[parts[i]] = {};
+			source = source[parts[i]];
+			target = target[parts[i]];
+		}
+		if (!source[parts[parts.length-1]]) return; // Source doesn't have property
+		target[parts[parts.length-1]] = source[parts[parts.length-1]];
+	});
+	return safe;
+}
+
+// Call PureCloud APIs to get EWT
 function getEwt(queueId, mediaType) {
 	const deferred = Q.defer();
 
@@ -237,6 +261,7 @@ function getEwt(queueId, mediaType) {
 	return deferred.promise;
 }
 
+// Call PureCloud APIs to get queue observations
 function getQueueObservations(queueId) {
 	const deferred = Q.defer();
 
@@ -274,6 +299,7 @@ function getQueueObservations(queueId) {
 	return deferred.promise;
 }
 
+// Find metric in queue observation data
 function getQueueObservationMetric(data, metricName, qualifier, defaultValue) {
 	let foundMetric;
 
@@ -289,6 +315,7 @@ function getQueueObservationMetric(data, metricName, qualifier, defaultValue) {
 	return foundMetric ? foundMetric.stats.count : defaultValue;
 }
 
+// Serve response from cache, if found and not expired
 function getCache(req, res, next) {
 	try {
 		// Let putCache know it can cache this request
@@ -311,6 +338,8 @@ function getCache(req, res, next) {
 	}
 }
 
+
+// Add response to cache
 function putCache(req, res, next) {
 	try {
 		// Monkey patch res.send
@@ -336,6 +365,7 @@ function putCache(req, res, next) {
 	next();
 }
 
+// Broadcast a message to all websocket clients
 function broadcast(msg) {
 	wss.clients.forEach((client) => {
 		if (client.readyState === WebSocket.OPEN) {
@@ -344,22 +374,18 @@ function broadcast(msg) {
 	});
 }
 
+// Handle incoming notification from PureCloud
 function handleNotification(data) {
 	wslog.debug('PureCloud Notification: ', data);
 	let notification = JSON.parse(data);
 	let match = notification.topicName.match(/v2\.analytics\.queues\.(.{8}-.{4}-.{4}-.{4}-.{12})\.observations/);
 	if (match) {
 		wslog.debug(`Found queue ${match[1]}`);
-		handleQueueObservationData(notification);
+		updateQueueData(notification.eventBody.group.queueId, notification.eventBody.group.mediaType, notification.eventBody.data[0].metrics);
 	}
 }
 
-let stats = {};
-
-function handleQueueObservationData(data) {
-	updateQueueData(data.eventBody.group.queueId, data.eventBody.group.mediaType, data.eventBody.data[0].metrics);
-}
-
+// Update cached stats with new queue data
 function updateQueueData(queueId, mediaType, metrics) {
 	if (!stats[queueId]) stats[queueId] = { availableAgents: 0, busyAgents: 0 };
 
@@ -374,5 +400,3 @@ function updateQueueData(queueId, mediaType, metrics) {
 	// wslog.debug(stats);
 	broadcast({ queueStats: stats });
 }
-
-

@@ -1,5 +1,6 @@
 /* globals pureCloudCustomChatConfig */
 
+// Invoke the injector
 pureCloudInjectChatScriptElement();
 
 function pureCloudInjectChatScriptElement() {

@@ -18,22 +18,12 @@ ININ.webchat.create(pureCloudChatConfig, function(err, wc) {
 	pureCloudWebchat = wc;
 
 	// Auto (re)connect?
+	// This line of code will automatically open the chat window on pageload if the chat can be reconnected
 	if (pureCloudCustomChatConfig.autoConnect === true || wc.data.config.data.reconnectData) pureCloudRenderWidget('chat');
 });
 
-// function getStats() {
-// 	$.get(`/api/stats/${customChatConfig.queueId}?key=ewt&mediaType=chat&key=observations`)
-// 		.then((data) => {
-// 			$('#availableAgents').text(data.observations.availableAgents);
-// 			setTimeout(getStats, 500);
-// 		})
-// 		.catch((err) => {
-// 			console.log(err);
-// 		});
-// }
 
-
-
+// Start once DOM is ready
 $(document).ready(() => {
 	pureCloudInitialize();
 
@@ -61,6 +51,7 @@ $(document).ready(() => {
 
 
 
+// Injects widget into UI and initializes content
 function pureCloudInitialize() {
 	// Load main components
 	$('head').append(`<link rel="stylesheet" type="text/css" href="${pureCloudCustomChatConfig.scriptHost}style/widget.css">`);
@@ -155,6 +146,7 @@ function pureCloudInitialize() {
 	}
 }
 
+// Set default values on config object
 function pureCloudSetDefaults(defaults, target) {
 	Object.keys(defaults).forEach((key) => {
 		if (typeof(defaults[key]) === 'object') {
@@ -166,6 +158,7 @@ function pureCloudSetDefaults(defaults, target) {
 	});
 }
 
+// Generates the widget header with text
 function pureCloudBuildHeader(text) {
 	$('#purecloud-chatwidget-header').css('cursor', 'default');
 	let headerText = $('<span>');
@@ -178,6 +171,7 @@ function pureCloudBuildHeader(text) {
 	$('#purecloud-chatwidget-header').empty().append(headerText);
 }
 
+// Controls widget state
 function pureCloudRenderWidget(mode = 'closed') {
 	let d = pureCloudCustomChatConfig.expandAnimationMs; // full speed
 	let d2 = d / 2; // half speed
@@ -237,6 +231,7 @@ function pureCloudRenderWidget(mode = 'closed') {
 	}
 }
 
+// Initiates/reconnects a web chat with PureCloud
 function pureCloudStartChat() {
 	if (pureCloudChatStarted) return;
 
@@ -247,6 +242,7 @@ function pureCloudStartChat() {
 	pureCloudChatStarted = true;
 }
 
+// Connect to stats service and handle real-time stat notifications
 function pureCloudConnectStatsNotifications() {
 	// Create websocket to public stats service
 	pureCloudStatDataWebSocket = new WebSocket(pureCloudCustomChatConfig.statsWebsocketUri);
