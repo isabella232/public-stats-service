@@ -176,37 +176,54 @@ app.post('/api/callback', (req, res, next) => {
 
 
 // Log in to PureCloud, start express server, start websocket server, connect to PureCloud notifications
-client.loginClientCredentialsGrant(PURECLOUD_CLIENT_ID, PURECLOUD_CLIENT_SECRET)
-	.then(() => {
-		return notificationsApi.postNotificationsChannels();
-	})
-	.then((data) => {
-		channel = data;
-
-		// Connect web socket
-		pureCloudWebSocket = new WebSocket(channel.connectUri);
-		pureCloudWebSocket.on('open', () => {
-			wslog.info('Connected to PureCloud');
-		});
-
-		pureCloudWebSocket.on('message', handleNotification);
-
-		let topics = [];
-		monitoredQueueIds.forEach((queueId) => {
-			topics.push({ id: `v2.analytics.queues.${queueId}.observations`});
-			getQueueObservations(queueId);
-		});
-		log.debug('Subscribing to topics: ', topics);
-		return notificationsApi.putNotificationsChannelSubscriptions(channel.id, topics);
-	})
-	.then((data) => {
-		server.listen(PORT, () => log.info(`Example app listening on port ${PORT}!`));
-	})
+connectPureCloud()
+	.then(() => server.listen(PORT, () => log.info(`Example app listening on port ${PORT}!`)))
 	.catch((err) => log.error(err));
+
+// Refresh connection periodically every 23 hours
+setInterval(connectPureCloud, 23 * 60 * 60 * 1000);
 
 
 
 /* Local Functions */
+
+function connectPureCloud() {
+	const deferred = Q.defer();
+
+	client.loginClientCredentialsGrant(PURECLOUD_CLIENT_ID, PURECLOUD_CLIENT_SECRET)
+		.then(() => {
+			return notificationsApi.postNotificationsChannels();
+		})
+		.then((data) => {
+			channel = data;
+
+			// Close old websocket
+			if (pureCloudWebSocket) {
+				pureCloudWebSocket.close();
+			}
+
+			// Connect web socket
+			pureCloudWebSocket = new WebSocket(channel.connectUri);
+			pureCloudWebSocket.on('open', () => {
+				wslog.info('Connected to PureCloud');
+			});
+
+			pureCloudWebSocket.on('message', handleNotification);
+
+			// Subscribe to topics
+			let topics = [];
+			monitoredQueueIds.forEach((queueId) => {
+				topics.push({ id: `v2.analytics.queues.${queueId}.observations`});
+				getQueueObservations(queueId);
+			});
+			log.debug('Subscribing to topics: ', topics);
+			return notificationsApi.putNotificationsChannelSubscriptions(channel.id, topics);
+		})
+		.then(() => deferred.resolve())
+		.catch((err) => deferred.reject(err));
+
+	return deferred.promise;
+}
 
 // Sanatize object from request to prevent unknown properties
 function makeSafeObject(dirty, properties) {
