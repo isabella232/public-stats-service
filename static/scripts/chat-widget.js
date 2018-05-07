@@ -53,6 +53,31 @@ $(document).ready(() => {
 
 // Injects widget into UI and initializes content
 function pureCloudInitialize() {
+	let defaults = {
+		autoConnect: false,
+		containerEl: 'purecloud-chatwidget-chat-container',
+		chatWidget: {
+			width: 450,
+			height: 500,
+			backgroundColor: '#4498B4',
+			color: '#F6F6F6'
+		},
+		expandAnimationMs: 800,
+		header: {
+			defaultText: 'Click here to chat',
+			activeText: 'Chatting with PureCloud',
+			previewText: 'Choose a channel',
+			logo: 'https://www.genesys.com/favicon/2017/favicon.ico'
+		}
+	};
+
+	// Check required params
+	if (!pureCloudCustomChatConfig.queueId) throw Error('Missing pureCloudCustomChatConfig.queueId');
+	if (!pureCloudCustomChatConfig.statsWebsocketUri) throw Error('Missing pureCloudCustomChatConfig.statsWebsocketUri');
+
+	// Set custom config defaults
+	pureCloudSetDefaults(defaults, pureCloudCustomChatConfig);
+
 	// Load main components
 	$('head').append(`<link rel="stylesheet" type="text/css" href="${pureCloudCustomChatConfig.scriptHost}style/widget.css">`);
 	$('body').append($(`<div id="purecloud-chatwidget"><div id="purecloud-chatwidget-header"></div><div id="purecloud-chatwidget-container"><div id="purecloud-chatwidget-preview-container"></div><div id="${pureCloudCustomChatConfig.containerEl}"></div><div id="purecloud-chatwidget-callback-container"></div></div></div>`));
@@ -114,37 +139,6 @@ function pureCloudInitialize() {
 				$('#purecloud-chatwidget-callback-container').html('<p>Failed to schedule callback! Please try again.</p>');
 			});
 	});
-
-	let defaults = {
-		autoConnect: false,
-		containerEl: 'purecloud-chatwidget-chat-container',
-		chatWidget: {
-			width: 450,
-			height: 500,
-			backgroundColor: '#4498B4',
-			color: '#F6F6F6'
-		},
-		expandAnimationMs: 800,
-		header: {
-			defaultText: 'Click here to chat',
-			activeText: 'Chatting with PureCloud',
-			previewText: 'Choose a channel',
-			logo: 'https://www.genesys.com/favicon/2017/favicon.ico'
-		}
-	};
-
-	// Set custom config defaults
-	if (pureCloudCustomChatConfig) {
-		// Check required params
-		if (!pureCloudCustomChatConfig.queueId) throw Error('Missing pureCloudCustomChatConfig.queueId');
-		if (!pureCloudCustomChatConfig.statsWebsocketUri) throw Error('Missing pureCloudCustomChatConfig.statsWebsocketUri');
-		if (!pureCloudCustomChatConfig.containerEl) throw Error('Missing pureCloudCustomChatConfig.containerEl');
-
-		// Ensure all properties are set with something
-		pureCloudSetDefaults(defaults, pureCloudCustomChatConfig);
-	} else {
-		pureCloudCustomChatConfig = defaults;
-	}
 }
 
 // Set default values on config object
