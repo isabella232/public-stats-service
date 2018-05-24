@@ -4,10 +4,11 @@ let pureCloudWebchat,
 	pureCloudStatDataWebSocket, 
 	pureCloudStatData;
 let pureCloudChatStarted = false;
+const defaultChatContainerName = 'purecloud-chatwidget-chat-container';
 
 // This must be done as soon as possible for chat reconnect feature. Do not wait till document ready.
 // https://developer.mypurecloud.com/api/webchat/ 
-window.PURECLOUD_WEBCHAT_FRAME_CONFIG = pureCloudCustomChatConfig.containerEl;
+window.PURECLOUD_WEBCHAT_FRAME_CONFIG = pureCloudCustomChatConfig.containerEl || defaultChatContainerName;
 ININ.webchat.create(pureCloudChatConfig, function(err, wc) {
 	if (err) {
 		console.error(err);
@@ -55,7 +56,7 @@ $(document).ready(() => {
 function pureCloudInitialize() {
 	let defaults = {
 		autoConnect: false,
-		containerEl: 'purecloud-chatwidget-chat-container',
+		containerEl: defaultChatContainerName,
 		chatWidget: {
 			width: 450,
 			height: 500,
