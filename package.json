@@ -28,7 +28,7 @@
     "q": "^1.5.1",
     "request": "^2.85.0",
     "request-promise": "^4.2.2",
-    "ws": "^5.1.1"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "nodemon": "^1.17.3"
